@@ -76,6 +76,42 @@ flowchart LR
   lq --> ulog["uart_log_task"]
 ```
 
+### Sequence of one cycle
+
+```mermaid
+sequenceDiagram
+  participant T as Timer service task
+  participant RQ as request_q
+  participant S as sampler_task
+  participant B as i2c_bus (mutex per transaction)
+  participant DQ as display_q
+  participant LQ as uart_log_q
+  participant FQ as flash_q
+  participant D as display_task
+  participant U as uart_log_task
+  participant F as flash_task
+
+  Note over S: blocked in xQueueReceive (1 s timeout, heartbeat on every wake-up)
+  T->>RQ: sample_timer_cb: xQueueOverwrite(request)
+  RQ-->>S: wake up with request
+  S->>B: ds3231_read
+  B-->>S: time
+  S->>B: bme280_read (retry and recovery on error)
+  B-->>S: T, H, P (or I2C_ERR status)
+  S->>DQ: xQueueOverwrite(record)
+  S->>LQ: xQueueSend(record, timeout 0)
+  S->>FQ: xQueueSend(record, timeout 0), only if request.log and LOG_ON
+  Note over S: back to xQueueReceive, the cycle is finished for sampler
+  DQ-->>D: wake up
+  D->>B: draw frame (several short transactions)
+  LQ-->>U: wake up
+  U->>U: format line, write to UART
+  FQ-->>F: wake up
+  F->>F: append to sector buffer (erase and write every 256 records)
+```
+
+Each task finishes its own part independently and returns to waiting on its own queue. There is no global "end of cycle" event.
+
 ### Sampler FSM
 
 ```mermaid
