@@ -110,7 +110,7 @@ _Static_assert(FLASH_SECTOR_SIZE % sizeof(log_record_t) == 0,
 #define WDT_TASK_PRIO             2
 
 #define SAMPLER_TASK_STACK        4096
-#define FLASH_TASK_STACK          4096
+#define FLASH_TASK_STACK          8192
 #define DISPLAY_TASK_STACK        4096
 #define UART_LOG_TASK_STACK       3072
 #define UART_CMD_TASK_STACK       3072

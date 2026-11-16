@@ -8,5 +8,5 @@ idf_component_register(
         "tasks/uart_cmd_task.c"
         "tasks/wdt_task.c"
     INCLUDE_DIRS "."
-    REQUIRES esp_driver_i2c esp_driver_uart bme280 esp_ssd1306
+    REQUIRES esp_driver_i2c esp_driver_uart esp_partition bme280 esp_ssd1306
 )

@@ -73,7 +73,7 @@ void app_main(void)
     
     xEventGroupSetBits(flags, F_LOG_ON);    // Enable log output by default
 
-
+    
     // --- INITIALIZATION SECTION --- //
     // Structure for storing data from sensor
     //struct bme280_data comp_data = {0};
@@ -110,13 +110,17 @@ void app_main(void)
     // --- END INITIALIZATION SECTION --- //
 
     xTaskCreate(sampler_task,  "sample",   4096, NULL, 5, NULL);
-    xTaskCreate(flash_task,    "flash",    4096, NULL, 4, NULL);
+    xTaskCreate(flash_task,    "flash",    FLASH_TASK_STACK, NULL, 4, NULL);
     xTaskCreate(display_task,  "display",  4096, NULL, 3, NULL);
     xTaskCreate(uart_log_task, "uart_log", 3072, NULL, 2, NULL);
     xTaskCreate(uart_cmd_task, "uart_cmd", 3072, NULL, 2, NULL);
     xTaskCreate(wdt_task,      "wdt",      2048, NULL, 2, NULL);
 
-    sample_timer = xTimerCreate("sample", pdMS_TO_TICKS(5000), pdTRUE, NULL, sample_timer_cb);
+    sample_timer = xTimerCreate("sample", pdMS_TO_TICKS(100), pdTRUE, NULL, sample_timer_cb);
     xTimerStart(sample_timer, 0);
+
+    // Write first measurement before first timer period elaplsed
+    sample_req_t first = { REQ_TIMER, true };
+    xQueueOverwrite(request_q, &first);
 }
 

@@ -15,11 +15,11 @@ static void fake_sample(log_record_t *r) {
 
     r->temp_x100 = 2345;   // 23.45 C
     r->hum_x100 = 4567;    // 45.67 %
-    r->press_mmhg = 1013;
+    r->press_mmhg = 0;
     r->status = 0;
 }
 
-
+static uint16_t cnt = 0;
 /**
  * @brief Main sampling loop that waits for a sample request, reads sensor data,
  * then distributes the result to the display, UART logger, and flash queue.
@@ -32,13 +32,15 @@ void sampler_task(void *arg) {
             continue;                                                      //     timeout: only refresh heartbeat
 
         log_record_t r = {0};
+        cnt++;
         fake_sample(&r);
+        r.press_mmhg = cnt;
         //ds3231_read(&r);                                                   // (3) read RTC timestamp
         //bme280_read(&r);                                                   //     read BME280 sensor data with retry/recovery
 
         sink_msg_t m = { .type = MSG_RECORD, .rec = r };                     // (4) send record to sinks
         xQueueOverwrite(display_q, &m);
-        //xQueueSend(uart_log_q, &m, 0);
+        xQueueSend(uart_log_q, &m, 0);
         if (req.log && (xEventGroupGetBits(flags) & F_LOG_ON))
             xQueueSend(flash_q, &m, 0);
     }                                                                       // (5) loop back to (1)
