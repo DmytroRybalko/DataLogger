@@ -82,7 +82,7 @@ void app_main(void)
     xTaskCreate(uart_cmd_task, "uart_cmd", 3072, NULL, 2, NULL);
     xTaskCreate(wdt_task,      "wdt",      2048, NULL, 2, NULL);
 
-    sample_timer = xTimerCreate("sample", pdMS_TO_TICKS(100), pdTRUE, NULL, sample_timer_cb);
+    sample_timer = xTimerCreate("sample", pdMS_TO_TICKS(500), pdTRUE, NULL, sample_timer_cb);
     xTimerStart(sample_timer, 0);
 
     // Write first measurement before first timer period elaplsed

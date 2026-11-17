@@ -31,6 +31,7 @@ static void parse_line(char *line)
     }
 
     if (strcmp(p, "status") == 0) {
+        // TODO: replace printf() with uart_write() to make commands appear in uart_log terminal 
         printf("status: log=%s flash_full=%s\n",
                (xEventGroupGetBits(flags) & F_LOG_ON) ? "on" : "off",
                (xEventGroupGetBits(flags) & F_FLASH_FULL) ? "yes" : "no");

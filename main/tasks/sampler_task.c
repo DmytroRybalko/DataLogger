@@ -39,8 +39,11 @@ void sampler_task(void *arg) {
         //bme280_read(&r);                                                   //     read BME280 sensor data with retry/recovery
 
         sink_msg_t m = { .type = MSG_RECORD, .rec = r };                     // (4) send record to sinks
+        
         xQueueOverwrite(display_q, &m);
+        
         xQueueSend(uart_log_q, &m, 0);
+        
         if (req.log && (xEventGroupGetBits(flags) & F_LOG_ON))
             xQueueSend(flash_q, &m, 0);
     }                                                                       // (5) loop back to (1)
