@@ -53,7 +53,6 @@ typedef struct {
  */
 typedef enum {
     MSG_RECORD,
-    MSG_FLUSH,
     MSG_ERASE
 } msg_type_t;
 

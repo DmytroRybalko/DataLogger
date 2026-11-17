@@ -22,3 +22,6 @@ extern EventGroupHandle_t hb_group;    // Heartbeat flags for watchdog/task heal
 extern EventGroupHandle_t flags;       // Runtime feature flags such as logging enabled/disabled
 
 extern TimerHandle_t sample_timer;     // Triggers periodic sensor sampling every 5 s
+
+// Peripherial device initialization
+esp_err_t periph_init(void);

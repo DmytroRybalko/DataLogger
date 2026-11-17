@@ -60,7 +60,9 @@ i2c_master_bus_config_t bus_config = {
 
 void app_main(void)
 {
-    
+    // --- INITIALIZATION SECTION --- //
+    periph_init();
+
     i2c_mutex  = xSemaphoreCreateMutex();
     uart_mutex = xSemaphoreCreateMutex();
     request_q  = xQueueCreate(1,  sizeof(sample_req_t));
@@ -68,46 +70,10 @@ void app_main(void)
     flash_q    = xQueueCreate(16, sizeof(sink_msg_t));
     uart_log_q = xQueueCreate(8,  sizeof(sink_msg_t));
     uart_cmd_q = xQueueCreate(8,  sizeof(sink_msg_t));
-    hb_group   = xEventGroupCreate();       // Heartbeat flags for watchdog monitoring
-    flags      = xEventGroupCreate();       // Runtime flags, e.g. whether logging is enabled
+    hb_group   = xEventGroupCreate();                   // Heartbeat flags for watchdog monitoring
+    flags      = xEventGroupCreate();                   // Runtime flags, e.g. whether logging is enabled
     
-    xEventGroupSetBits(flags, F_LOG_ON);    // Enable log output by default
-
-    
-    // --- INITIALIZATION SECTION --- //
-    // Structure for storing data from sensor
-    //struct bme280_data comp_data = {0};
-    
-    // Init bme280 struct
-    //struct bme280_dev s_bme280 = {0};
-
-    // Define handles
-    //i2c_master_bus_handle_t bus_handle;
-    //i2c_master_dev_handle_t bme280_handle;
-    
-    // initialize i2c ssd1306 configuration
-    //ssd1306_config_t ssd1306_config = I2C_SSD1306_128x64_CONFIG_DEFAULT;
-    //ssd1306_handle_t ssd1306_handle;
-
-    // Create master bus connection
-    //ESP_ERROR_CHECK(i2c_new_master_bus(&bus_config, &bus_handle));
-    
-    // Create bme280 connection
-    //ESP_ERROR_CHECK(i2c_master_bus_add_device(bus_handle, &bme280_config, &bme280_handle));
-    
-    // Init ssd1306 oled
-    /*ssd1306_init(bus_handle, &ssd1306_config, &ssd1306_handle);
-    if (ssd1306_handle == NULL) {
-        ESP_LOGE(OLED, "ssd1306 handle init failed");
-        assert(ssd1306_handle);
-    }*/
-    
-    // Init bme280 sensor
-    //init_bme280(bme280_handle, &s_bme280);
-
-    // Main loop for reading and displaying temperature, pressure and humidity data
-
-    // --- END INITIALIZATION SECTION --- //
+    xEventGroupSetBits(flags, F_LOG_ON);                // Enable log output by default
 
     xTaskCreate(sampler_task,  "sample",   4096, NULL, 5, NULL);
     xTaskCreate(flash_task,    "flash",    FLASH_TASK_STACK, NULL, 4, NULL);

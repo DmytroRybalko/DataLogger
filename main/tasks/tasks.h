@@ -4,7 +4,7 @@
 void sampler_task(void *arg);
 
 /**
- * @brief Stores or flushes log records to the flash backend.
+ * @brief Stores log records to the flash backend and erases the partition when needed.
  */
 void flash_task(void *arg);
 

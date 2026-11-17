@@ -1,6 +1,5 @@
 // Consumes sink_msg_t from flash_q:
 //   MSG_RECORD - append to the one-sector RAM buffer, write the sector when it is full
-//   MSG_FLUSH  - write the partially filled buffer (tail padded with 0xFF)
 //   MSG_ERASE  - erase the whole partition and start from the first sector
 // Build only ONE flash_task.c variant (this one or the extended one).
 
@@ -87,10 +86,6 @@ void flash_task(void *arg)
             if (xEventGroupGetBits(flags) & F_FLASH_FULL) break;         // logging is stopped
             s_buf[s_count++] = m.rec;
             if (s_count == RECORDS_PER_SECTOR) write_sector();
-            break;
-
-        case MSG_FLUSH:
-            if (s_count > 0) write_sector();                             // empty buffer: no sector consumed
             break;
 
         case MSG_ERASE:

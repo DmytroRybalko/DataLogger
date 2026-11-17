@@ -65,7 +65,9 @@
 /* UART                                                                */
 /* ------------------------------------------------------------------ */
 
-#define UART_PORT                 0
+#define TX_PIN                    GPIO_NUM_17
+#define RX_PIN                    GPIO_NUM_18
+#define UART_PORT                 UART_NUM_1
 #define UART_BAUD                 115200
 #define UART_RX_BUF_SIZE          256
 #define UART_TX_BUF_SIZE          512
